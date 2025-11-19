@@ -4,6 +4,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User, Pet
 from app import app, db
 from sqlalchemy import or_
+from PIL import Image
+from werkzeug.utils import secure_filename
+import uuid, os
+
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 
 @app.route('/')
 def index():
@@ -69,8 +74,8 @@ def register():
         cidade = request.form['cidade']
 
         # Verifica se já existe usuário com esse email
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
+        existe_user = User.query.filter_by(email=email).first()
+        if existe_user:
             flash("Já existe um usuário com esse email.")
             return redirect(url_for('register'))
 
@@ -210,6 +215,53 @@ def delete(id):
     flash("Pet removido com sucesso!")
     return redirect(url_for('perfil'))
 
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def is_real_image(file):
+    try:
+        img = Image.open(file)
+        img.verify()
+        return True
+    except:
+        return False
+
+
+@app.route('/update_profile', methods=['POST'])
+@login_required
+def update_profile():
+    imagem = request.files.get('foto_perfil')
+
+    if not imagem or imagem.filename == "":
+        flash("Nenhuma imagem selecionada.")
+        return redirect(url_for('perfil'))
+
+    # 1. Verifica extensão
+    if not allowed_file(imagem.filename):
+        flash("Envie apenas imagens PNG, JPG ou JPEG.")
+        return redirect(url_for('perfil'))
+
+    # 2. Verifica conteúdo real (protege contra arquivos renomeados)
+    if not is_real_image(imagem.stream):
+        flash("O arquivo enviado não é uma imagem válida.")
+        return redirect(url_for('perfil'))
+
+    # Resetar stream para o início antes de salvar
+    imagem.stream.seek(0)
+
+    # 3. Criar nome seguro
+    filename = secure_filename(f"{uuid.uuid4().hex}_{imagem.filename}")
+    upload_path = os.path.join(current_app.root_path, "static/uploads", filename)
+
+    # 4. Salvar imagem
+    imagem.save(upload_path)
+
+    # 5. Atualizar no BD
+    current_user.foto_perfil = filename
+    db.session.commit()
+
+    flash("Foto de perfil atualizada com sucesso!")
+    return redirect(url_for('perfil'))
 
 
 @app.route('/perfil')

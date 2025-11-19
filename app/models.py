@@ -10,6 +10,8 @@ class User(UserMixin, db.Model):
     estado = db.Column(db.String(100), nullable=False)
     cidade = db.Column(db.String(100),nullable=True)
     telefone = db.Column(db.String(100), nullable=False)
+    foto_perfil = db.Column(db.String(200), nullable=True)
+
 
 
     # Relacionamento: um usuário pode ter vários pets

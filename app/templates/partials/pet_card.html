@@ -1,24 +1,24 @@
-<div class="col-md-4 mb-4">
-  <div class="card h-100 shadow-sm">
+
+<div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+
     {% if item.imagem %}
-      <img src="{{ url_for('static', filename='uploads/' ~ item.imagem) }}" class="card-img-top" style="height:220px; object-fit:cover;" alt="{{ item.nome }}">
+        <img src="{{ url_for('static', filename='uploads/' ~ item.imagem) }}"
+             class="w-full h-56 object-cover">
     {% else %}
-      <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height:220px;">
-        <small>Sem imagem</small>
-      </div>
+        <div class="w-full h-56 bg-gray-300 flex items-center justify-center text-gray-600">
+            Sem imagem
+        </div>
     {% endif %}
 
-    <div class="card-body d-flex flex-column">
-      <h5 class="card-title mb-1">{{ item.nome }}</h5>
-      <div class="mb-2">
-        <small class="text-muted">{{ item.tipo or '—' }} • {{ item.idade or 'idade desconhecida' }}</small>
-      </div>
-      <p class="card-text text-truncate" style="max-height:3.6em; overflow:hidden;">
-        {{ item.descricao or 'Sem descrição' }}
-      </p>
-      <div class="mt-auto">
-        <p class="mb-2"><strong>Contato:</strong> {{ item.contato }}</p>
-      </div>
+    <div class="p-4">
+        <p class="text-sm text-gray-700">
+            <strong>idade:</strong> {{ item.idade }}<br>
+            <strong>Nome:</strong> {{ item.nome }}<br>
+            <strong>Estado:</strong> {{ item.dono.estado }}<br>
+            <strong>Cidade:</strong> {{ item.dono.cidade }}
+        </p>
     </div>
-  </div>
+
 </div>
+
+
