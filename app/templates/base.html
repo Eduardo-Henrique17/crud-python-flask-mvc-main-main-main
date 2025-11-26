@@ -26,8 +26,12 @@
         <button type="submit" class="text-white hover:underline">Adicionar Pet</button>
       </a>
       <a href="{{ url_for('perfil') }}" class="flex items-center space-x-2">
-        <img src="{{ url_for('static', filename='perfil.png') }}" alt="Perfil" class="h-9 w-9 rounded-full">
+        <img 
+        src="{{ url_for('static', filename='uploads/' ~ current_user.foto_perfil) if current_user.foto_perfil else url_for('static', filename='perfil.png') }}" 
+        alt="Perfil" 
+        class="h-9 w-9 rounded-full object-cover">
       </a>
+
       <a href="{{ url_for('logout') }}" method="POST">
         <button type="submit" class="text-white hover:underline">Sair</button>
       </a>

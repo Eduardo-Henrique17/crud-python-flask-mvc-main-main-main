@@ -79,9 +79,18 @@ def register():
             flash("Já existe um usuário com esse email.")
             return redirect(url_for('register'))
 
-        hashed_password = generate_password_hash(senha, method='sha256')
-        new_user = User(nome=nome, email=email, senha=hashed_password,estado=estado, telefone=telefone,cidade=cidade)
+        # Use pbkdf2:sha256 ou apenas padrão
+        hashed_password = generate_password_hash(senha, method='pbkdf2:sha256')
 
+        new_user = User(
+            nome=nome,
+            email=email,
+              # salva o hash na coluna 'senha'
+            estado=estado,
+            telefone=telefone,
+            cidade=cidade
+        )
+        new_user.set_password(senha) 
         db.session.add(new_user)
         db.session.commit()
 
@@ -98,12 +107,12 @@ def login():
         senha = request.form['senha']
 
         user = User.query.filter_by(email=email).first()
-
-        if user and check_password_hash(user.senha, senha):
+        if user and user.check_password(senha):
             login_user(user)
             return redirect(url_for('perfil'))
         else:
             flash("Email ou senha incorretos.")
+
 
     return render_template('login.html')
 

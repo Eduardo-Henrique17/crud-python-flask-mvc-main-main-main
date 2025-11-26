@@ -2,29 +2,29 @@ from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+from app import db
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    senha = db.Column(db.String(200), nullable=False)
+    senha = db.Column(db.String(200), nullable=False)  # Armazena hash seguro
     estado = db.Column(db.String(100), nullable=False)
-    cidade = db.Column(db.String(100),nullable=True)
+    cidade = db.Column(db.String(100), nullable=True)
     telefone = db.Column(db.String(100), nullable=False)
     foto_perfil = db.Column(db.String(200), nullable=True)
 
-
-
-    # Relacionamento: um usuário pode ter vários pets
     pets = db.relationship('Pet', backref='dono', lazy=True)
 
     def set_password(self, senha):
-        self.senha_hash = generate_password_hash(senha)
+        # Gera hash seguro compatível com versões recentes do Werkzeug
+        self.senha = generate_password_hash(senha, method="pbkdf2:sha256")
 
     def check_password(self, senha):
-        return check_password_hash(self.senha_hash, senha)
+        return check_password_hash(self.senha, senha)
 
-    def __repr__(self):
-        return f'<User {self.nome}>'
 
 
 class Pet(db.Model):
