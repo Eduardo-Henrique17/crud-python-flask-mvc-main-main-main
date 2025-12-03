@@ -14,3 +14,4 @@ pip3 install -r requirements.txt
 
 ## rodar
 python3 run.py 
+
