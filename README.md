@@ -1,8 +1,7 @@
 #C omandos básicos do projeto
 
 ## criar anbiente
-python3 -m venv venv
-
+python3 -m venv v
 ## ativar ambiente Linux MacOs
 source ./venv/bin/activate
 
